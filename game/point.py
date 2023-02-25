@@ -13,6 +13,12 @@ class Point:
     def distance_sq(self, other: Point) -> float:
         return (self.x - other.x) ** 2 + (self.y - other.y) ** 2
 
+    def __add__(self, other: Point) -> Point:
+        return Point(self.x + other.x, self.y + other.y)
+
+    def __mul__(self, scalar: float | int) -> Point:
+        return Point(self.x * scalar, self.y * scalar)
+
     def closest(self, a: Point, b: Point) -> Point:
         """
         http://files.magusgeek.com/csb/csb.html

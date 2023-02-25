@@ -70,3 +70,23 @@ class TestPod(unittest.TestCase):
         c = Point(x=0, y=0)
         p1 = Point(x=0, y=0)
         self.assertEqual(c.closest(a, b), p1)
+
+    def test_add(self):
+        p1 = Point(x=5, y=5)
+        p2 = Point(x=5, y=-5)
+        p3 = Point(x=10, y=0)
+        self.assertEqual(p1+p2, p3)
+
+        p1 = Point(x=5, y=5)
+        p2 = Point(x=0, y=0)
+        self.assertEqual(p1+p2, p1)
+
+    def test_multiply(self):
+        p1 = Point(x=5, y=-2)
+        p2 = Point(x=0, y=0)
+        self.assertEqual(p1 * 0, p2)
+        with self.assertRaises(TypeError):
+            0 * p1
+
+        p3 = Point(7.5, -3)
+        self.assertEqual(p1 * 1.5, p3)
