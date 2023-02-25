@@ -1,5 +1,5 @@
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import sys
 import math
@@ -11,12 +11,11 @@ from .action import Action
 
 @dataclass
 class Pod(Point):
-    r: float
     vx: float
     vy: float
     angle: float
     nextCheckPointId: int
-    checkPointPassed: int = 0
+    r: float = field(repr=False, default=0.0)
 
     def applyMoves(self, actions: list[Action], checkpoints: list[CheckPoint], verbose: bool = False):
         if verbose:
@@ -117,7 +116,6 @@ class Pod(Point):
         chkpt_pos = checkPoints[self.nextCheckPointId]
 
         if self._has_collision(chkpt_pos, verbose):
-            self.checkPointPassed += 1
             self.nextCheckPointId += 1
 
     def _has_collision(self, chkptPos: CheckPoint, verbose: bool = False):

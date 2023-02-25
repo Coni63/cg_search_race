@@ -14,7 +14,7 @@ class TestPod(unittest.TestCase):
         """
         Only check acceleration and friction
         """
-        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0)
         checkpoints = [CheckPoint(x=0, y=1000, r=600)]
         moves = [Action(thrust=200, angle=0) for _ in range(10)]
 
@@ -28,7 +28,7 @@ class TestPod(unittest.TestCase):
         """
         Only check acceleration and friction
         """
-        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0)
         checkpoints = [CheckPoint(x=0, y=1000, r=600)]
         speeds = [170, 314, 436, 540, 629, 704, 768, 822, 868, 907, 940, 969, 993, 1014, 1031, 1046, 1059]
 
@@ -45,7 +45,7 @@ class TestPod(unittest.TestCase):
         Pod do a half turn if it's the first turn only.
         After it's 18 deg change max
         """
-        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0)
         checkpoints = [CheckPoint(x=0, y=1000, r=600)]
 
         self.assertEqual(pod.vx, 0)
@@ -57,7 +57,7 @@ class TestPod(unittest.TestCase):
         self.assertEqual(pod.vy, 0)
 
     def test_friction(self):
-        pod = Pod(x=0, y=0, r=0, vx=150, vy=0, angle=0, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=150, vy=0, angle=0, nextCheckPointId=0)
         checkpoints = [CheckPoint(x=0, y=1000, r=600)]
 
         self.assertEqual(pod.vx, 150)
@@ -69,7 +69,7 @@ class TestPod(unittest.TestCase):
         """
         Check rotation limits
         """
-        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0)
         checkpoints = [CheckPoint(x=0, y=100000, r=600)]
 
         self.assertEqual(pod.angle, 0)
@@ -98,7 +98,7 @@ class TestPod(unittest.TestCase):
         """
         Check rotation limits
         """
-        pod = Pod(x=0, y=0, r=0, vx=5, vy=5, angle=45, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=5, vy=5, angle=45, nextCheckPointId=0)
         checkpoints = [CheckPoint(x=0, y=100000, r=600)]
 
         self.assertEqual(pod.angle, 45)
@@ -128,7 +128,7 @@ class TestPod(unittest.TestCase):
         Case when you are tangent to the circle. 
         In that case, the checkpoint does not count
         """
-        pod = Pod(x=0, y=0, r=0, vx=500, vy=0, angle=0, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=500, vy=0, angle=0, nextCheckPointId=0)
         checkpoints = [CheckPoint(x=350, y=600, r=600), CheckPoint(x=0, y=100000, r=600)]
 
         move = Action(thrust=200, angle=0)
@@ -141,7 +141,7 @@ class TestPod(unittest.TestCase):
         """
         Case when you are inside the circle in the middle of the trajectory
         """
-        pod = Pod(x=0, y=0, r=0, vx=500, vy=0, angle=0, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=500, vy=0, angle=0, nextCheckPointId=0)
         checkpoints = [CheckPoint(x=350, y=599, r=600), CheckPoint(x=0, y=100000, r=600)]
 
         move = Action(thrust=200, angle=0)
@@ -155,7 +155,7 @@ class TestPod(unittest.TestCase):
         Case when you are inside the circle at the start of the trajectory
         The id is already incremented to next checkpoint as it will never happen in first frame
         """
-        pod = Pod(x=0, y=0, r=0, vx=500, vy=0, angle=0, nextCheckPointId=1, checkPointPassed=1)
+        pod = Pod(x=0, y=0, r=0, vx=500, vy=0, angle=0, nextCheckPointId=1)
         checkpoints = [CheckPoint(x=0, y=599, r=600), CheckPoint(x=0, y=100000, r=600)]
 
         move = Action(thrust=200, angle=0)
@@ -168,7 +168,7 @@ class TestPod(unittest.TestCase):
         """
         Case when you are inside the circle at the start of the trajectory
         """
-        pod = Pod(x=0, y=0, r=0, vx=500, vy=0, angle=0, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=500, vy=0, angle=0, nextCheckPointId=0)
         checkpoints = [CheckPoint(x=700, y=599, r=600), CheckPoint(x=0, y=100000, r=600)]
 
         move = Action(thrust=200, angle=0)
@@ -178,7 +178,7 @@ class TestPod(unittest.TestCase):
         self.assertEqual(pod.nextCheckPointId, 1)
 
     def test_output(self):
-        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=36, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=36, nextCheckPointId=0)
         move = Action(thrust=123, angle=9)
 
         x, y, thrust = pod.output(move)
@@ -188,7 +188,7 @@ class TestPod(unittest.TestCase):
         self.assertEqual(thrust, 123)
 
     def test_output_2(self):
-        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=5, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=5, nextCheckPointId=0)
         move = Action(thrust=11, angle=-10)
 
         x, y, thrust = pod.output(move)
@@ -198,7 +198,7 @@ class TestPod(unittest.TestCase):
         self.assertEqual(thrust, 11)
 
     def test_output_3(self):
-        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=355, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=355, nextCheckPointId=0)
         move = Action(thrust=11, angle=10)
 
         x, y, thrust = pod.output(move)
@@ -209,7 +209,7 @@ class TestPod(unittest.TestCase):
 
     def test_get_angle(self):
         # angle is not considered as it is only the absolute angle from the pod to checkpoint
-        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0, checkPointPassed=0) 
+        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0) 
 
         checkpoint = CheckPoint(x=1000, y=1000, r=600)
         angle = pod.getAngle(checkpoint)
@@ -231,14 +231,14 @@ class TestPod(unittest.TestCase):
         angle = pod.getAngle(checkpoint)
         self.assertAlmostEqual(angle, 0)
 
-        pod = Pod(x=500, y=500, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=500, y=500, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0)
         checkpoint = CheckPoint(x=-1000, y=500, r=600)
         angle = pod.getAngle(checkpoint)
         self.assertAlmostEqual(angle, 180)
 
     def test_diff_angle(self):
         # angle is not considered as it is only the absolute angle from the pod to checkpoint
-        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0)
 
         checkpoint = CheckPoint(x=1000, y=1000, r=600)
         angle = pod.diffAngle(checkpoint)
@@ -260,7 +260,7 @@ class TestPod(unittest.TestCase):
         angle = pod.diffAngle(checkpoint)
         self.assertAlmostEqual(angle, 0)
 
-        pod = Pod(x=500, y=500, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0, checkPointPassed=0)
+        pod = Pod(x=500, y=500, r=0, vx=0, vy=0, angle=0, nextCheckPointId=0)
         checkpoint = CheckPoint(x=-1000, y=500, r=600)
         angle = pod.diffAngle(checkpoint)
         self.assertAlmostEqual(angle, -180)  # -180 or 180 but -180 is smaller so this is the answer here
