@@ -177,6 +177,19 @@ class TestPod(unittest.TestCase):
         self.assertEqual(pod.x, 700)
         self.assertEqual(pod.nextCheckPointId, 1)
 
+    def test_cross_checkpoint_5(self):
+        """
+        Case when you are inside the circle at the start of the trajectory
+        """
+        pod = Pod(x=150, y=0, r=0, vx=127, vy=0, angle=0, nextCheckPointId=0)
+        checkpoints = [CheckPoint(x=800, y=0), CheckPoint(x=0, y=100000, r=600)]
+
+        move = Action(thrust=200, angle=0)
+        self.assertEqual(pod.nextCheckPointId, 0)
+        pod.applyMove(move, checkpoints)
+        self.assertEqual(pod.x, 477)
+        self.assertEqual(pod.nextCheckPointId, 1)
+
     def test_output(self):
         pod = Pod(x=0, y=0, r=0, vx=0, vy=0, angle=36, nextCheckPointId=0)
         move = Action(thrust=123, angle=9)

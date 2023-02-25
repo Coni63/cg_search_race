@@ -118,7 +118,6 @@ class Pod(Point):
 
     def _check_cross_checkpoint(self, checkPoints: list[CheckPoint], verbose: bool) -> int:
         chkpt_pos = checkPoints[self.nextCheckPointId]
-
         if self._has_collision(chkpt_pos, verbose):
             self.nextCheckPointId += 1
             return 1
@@ -131,7 +130,7 @@ class Pod(Point):
         if v2 == 0:
             return False
 
-        # Distance carré entre mon pt de départ et le centre du checkpoint
+        # Distance carré entre le point de départ et le centre du checkpoint
         dist = self.distance_sq(chkptPos)
 
         # Somme des rayons au carré
@@ -149,27 +148,26 @@ class Pod(Point):
         pdist = chkptPos.distance_sq(p)
 
         # Si la distance entre u et cette droite est inférieur à la somme des rayons, alors il y a possibilité de collision
-        if pdist < chkptPos.r2:
-            # on verifie que le point est en amont de la trajectore
-            # P1 -> p et P1 -> p2 on un produit scalaire > 0
-            # if (p.x - P1.x) * (P2.x - P1.x) + (p.y - P1.y) * (P2.y - P1.y) < 0: return False
-            if (p.x - self.x) * self.vx + (p.y - self.y) * self.vy < 0:
-                return False
+        if pdist >= chkptPos.r2:
+            return False
 
-            # Le point d'impact est plus loin que ce qu'on peut parcourir en un seul tour
-            pdist = p.distance_sq(self)
-            if pdist > v2:
-                return False
+        # on verifie que le point est en amont de la trajectore
+        # P1 -> p et P1 -> p2 on un produit scalaire > 0
+        if (p.x - self.x) * self.vx + (p.y - self.y) * self.vy < 0:
+            return False
 
-            # Temps nécessaire pour atteindre le point d'impact
+        # Le point d'impact est plus loin que ce qu'on peut parcourir en un seul tour
+        pdist = p.distance_sq(nextPos)
+        if pdist > v2:
+            return False
 
-            if verbose:
-                t = pdist / (v2**0.5)
-                print(f"Simulated Collision Time: {t}", file=sys.stderr)
+        # Temps nécessaire pour atteindre le point d'impact
 
-            return True
+        if verbose:
+            t = pdist / (v2**0.5)
+            print(f"Simulated Collision Time: {t}", file=sys.stderr)
 
-        return False
+        return True
 
     def _move(self):
         self.x += self.vx
