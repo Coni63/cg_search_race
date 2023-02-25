@@ -17,7 +17,7 @@ class TestGame(unittest.TestCase):
     def test_step(self):
         game = GameManager()
 
-        # override checkpoints
+        # override test_case
         game.checkpoints = [
             CheckPoint(x=800, y=0),
             CheckPoint(x=2200, y=0),
@@ -47,5 +47,5 @@ class TestGame(unittest.TestCase):
 
         pod, reward, done = game.step(Action(thrust=200, angle=0))
         self.assertEqual(pod.nextCheckPointId, 2)
-        self.assertEqual(reward, 1e6)
+        self.assertEqual(reward, 109273)
         self.assertTrue(done)

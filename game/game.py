@@ -19,15 +19,15 @@ class GameManager:
         return self.pod, self.checkpoints
 
     def step(self, action: Action) -> tuple[Pod, float, bool]:
-        # print(self.checkpoints)
         crossed_chkpt: int = self.pod.applyMove(action=action, checkpoints=self.checkpoints)
-        # print(crossed_chkpt)
 
         # game is done when the target is the last checkpoint which is a fictive one aligned with the 2 last ones
         done = self.pod.nextCheckPointId == len(self.checkpoints) - 1
 
-        if done:
-            return self.pod, 1_000_000, done
+        # remove the notion of fixed XP when done to ensure he crosses the checkpoint as fast as possible.
+        # The reward is higher if it is closer to the fake last checkpoint
+        # if done:
+        #     return self.pod, 1_000_000, done
 
         current_target = self.checkpoints[self.pod.nextCheckPointId]
         d = self.pod.distance(current_target) - current_target.r
