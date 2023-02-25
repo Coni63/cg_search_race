@@ -3,7 +3,7 @@ import unittest
 from game import Point
 
 
-class TestPod(unittest.TestCase):
+class TestPoint(unittest.TestCase):
     def setUp(self):
         return super().setUp()
 
