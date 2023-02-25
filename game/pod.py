@@ -17,22 +17,26 @@ class Pod(Point):
     nextCheckPointId: int
     r: float = field(repr=False, default=0.0)
 
-    def applyMoves(self, actions: list[Action], checkpoints: list[CheckPoint], verbose: bool = False):
+    def applyMoves(self, actions: list[Action], checkpoints: list[CheckPoint], verbose: bool = False) -> int:
         if verbose:
             self.describe()
 
+        cross = 0
         for action in actions:
-            self.applyMove(action, checkpoints, verbose=verbose)
+            cross += self.applyMove(action, checkpoints, verbose=verbose)
 
         if verbose:
             self.describe()
 
-    def applyMove(self, action: Action, checkpoints: list[CheckPoint], verbose: bool = False):
+        return cross
+
+    def applyMove(self, action: Action, checkpoints: list[CheckPoint], verbose: bool = False) -> int:
         self._rotate(action.angle)
         self._boost(action.thrust)
-        self._check_cross_checkpoint(checkpoints, verbose=verbose)
+        cross: int = self._check_cross_checkpoint(checkpoints, verbose=verbose)
         self._move()
         self._end()
+        return cross
 
     def output(self, action: Action):
         next_angle: float = self.angle + action.angle
@@ -112,11 +116,14 @@ class Pod(Point):
         self.vx += math.cos(ra) * thrust
         self.vy += math.sin(ra) * thrust
 
-    def _check_cross_checkpoint(self, checkPoints: list[CheckPoint], verbose: bool) -> None:
+    def _check_cross_checkpoint(self, checkPoints: list[CheckPoint], verbose: bool) -> int:
         chkpt_pos = checkPoints[self.nextCheckPointId]
 
         if self._has_collision(chkpt_pos, verbose):
             self.nextCheckPointId += 1
+            return 1
+
+        return 0
 
     def _has_collision(self, chkptPos: CheckPoint, verbose: bool = False):
         # si on est a l'arret, pas besoin de verifier
