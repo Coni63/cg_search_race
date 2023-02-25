@@ -81,6 +81,17 @@ class TestPoint(unittest.TestCase):
         p2 = Point(x=0, y=0)
         self.assertEqual(p1+p2, p1)
 
+    def test_sub(self):
+        p1 = Point(x=5, y=5)
+        p2 = Point(x=5, y=-5)
+        p3 = Point(x=0, y=10)
+        self.assertEqual(p1-p2, p3)
+
+        p1 = Point(x=5, y=5)
+        p2 = Point(x=0, y=0)
+        self.assertEqual(p1-p2, p1)
+        self.assertEqual(p1-p1, p2)
+
     def test_multiply(self):
         p1 = Point(x=5, y=-2)
         p2 = Point(x=0, y=0)
