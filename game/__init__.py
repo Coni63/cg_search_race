@@ -5,3 +5,4 @@ from .checkpoint import CheckPoint
 from .point import Point
 from .action import Action
 from .game import GameManager
+from .renderer import Renderer

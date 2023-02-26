@@ -17,6 +17,10 @@ class Pod(Point):
     nextCheckPointId: int
     r: float = field(repr=False, default=0.0)
 
+    @property
+    def speed(self):
+        return (self.vx * self.vx + self.vy * self.vy) ** 0.5
+
     def applyMoves(self, actions: list[Action], checkpoints: list[CheckPoint], verbose: bool = False) -> int:
         if verbose:
             self.describe()
