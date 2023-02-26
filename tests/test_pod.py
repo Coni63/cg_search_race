@@ -179,7 +179,7 @@ class TestPod(unittest.TestCase):
 
     def test_cross_checkpoint_5(self):
         """
-        Case when you are inside the circle at the start of the trajectory
+        Case when you enter exactly aligned with the center of the checkpoint
         """
         pod = Pod(x=150, y=0, r=0, vx=127, vy=0, angle=0, nextCheckPointId=0)
         checkpoints = [CheckPoint(x=800, y=0), CheckPoint(x=0, y=100000, r=600)]
@@ -188,6 +188,32 @@ class TestPod(unittest.TestCase):
         self.assertEqual(pod.nextCheckPointId, 0)
         pod.applyMove(move, checkpoints)
         self.assertEqual(pod.x, 477)
+        self.assertEqual(pod.nextCheckPointId, 1)
+
+    def test_cross_checkpoint_6(self):
+        """
+        Case when you cross the checkpoint by the middle point
+        """
+        pod = Pod(x=150, y=0, r=0, vx=1100, vy=0, angle=0, nextCheckPointId=0)
+        checkpoints = [CheckPoint(x=800, y=50), CheckPoint(x=0, y=100000, r=600)]
+
+        move = Action(thrust=200, angle=0)
+        self.assertEqual(pod.nextCheckPointId, 0)
+        pod.applyMove(move, checkpoints)
+        self.assertEqual(pod.x, 1450)
+        self.assertEqual(pod.nextCheckPointId, 1)
+
+    def test_cross_checkpoint_7(self):
+        """
+        Case when you cross the checkpoint by the middle point reversed
+        """
+        pod = Pod(x=1450, y=0, r=0, vx=-1100, vy=0, angle=180, nextCheckPointId=0)
+        checkpoints = [CheckPoint(x=800, y=50), CheckPoint(x=0, y=100000, r=600)]
+
+        move = Action(thrust=200, angle=0)
+        self.assertEqual(pod.nextCheckPointId, 0)
+        pod.applyMove(move, checkpoints)
+        self.assertEqual(pod.x, 150)
         self.assertEqual(pod.nextCheckPointId, 1)
 
     def test_output(self):
