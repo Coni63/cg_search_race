@@ -17,7 +17,6 @@ class Renderer:
     def __init__(self):
         self.screen = pygame.display.set_mode((1600, 900))
         self.clock = pygame.time.Clock()
-        # self.font = pygame.font.SysFont(None, 48)
 
     def start(self):
         pygame.init()
@@ -36,7 +35,6 @@ class Renderer:
             x, y = checkpoint.x // Renderer.FACTOR, checkpoint.y // Renderer.FACTOR
             pygame.draw.circle(self.screen, color, (x, y), checkpoint.r // Renderer.FACTOR, width=3)
 
-            # img = self.font.render(i, True, color)
             font = pygame.font.SysFont(None, 48)
             img = font.render(str(i), True, color)
             rect = img.get_rect()
@@ -53,13 +51,6 @@ class Renderer:
 
         pygame.display.flip()
         self.clock.tick(60)
-
-        # -------- Main Program Loop -----------
-        # while carryOn:
-        #     # --- Main event loop
-        #     for event in pygame.event.get(): # User did something
-        #         if event.type == pygame.QUIT: # If user clicked close
-        #             carryOn = False # Flag that we are done so we can exit the while loop
 
     def draw_arrow(
                   self,
