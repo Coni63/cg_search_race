@@ -73,3 +73,28 @@ class TestGame(unittest.TestCase):
         self.assertEqual(pod.nextCheckPointId, 2)
         self.assertEqual(reward, 109273)
         self.assertTrue(done)
+
+    def test_turn(self):
+        game = GameManager()
+
+        # override test_case
+        game.checkpoints = [
+            CheckPoint(x=800, y=0),
+            CheckPoint(x=2200, y=0),
+            CheckPoint(x=3600, y=0),  # this checkpoint will not be reach to end the game
+        ]
+        game.pod = Pod(x=0, y=0, vx=0, vy=0, angle=0, nextCheckPointId=0)
+        self.assertEqual(game.turn, 0)
+
+        pod, reward, done = game.step(Action(thrust=1, angle=0))
+        self.assertEqual(game.turn, 1)
+        self.assertFalse(done)
+
+        for i in range(598):
+            pod, reward, done = game.step(Action(thrust=1, angle=0))
+        self.assertEqual(game.turn, 599)
+        self.assertFalse(done)
+
+        pod, reward, done = game.step(Action(thrust=1, angle=0))
+        self.assertEqual(game.turn, 600)
+        self.assertTrue(done)

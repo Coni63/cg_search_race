@@ -15,6 +15,7 @@ class GameManager:
         self.done = False
         self.reward = 0
         self.renderer = renderer
+        self.turn = 0
 
         if self.renderer is not None:
             self.renderer.start()
@@ -36,9 +37,10 @@ class GameManager:
 
     def step(self, action: Action) -> tuple[Pod, float, bool]:
         crossed_chkpt: int = self.pod.applyMove(action=action, checkpoints=self.checkpoints)
+        self.turn += 1
 
         # game is done when the target is the last checkpoint which is a fictive one aligned with the 2 last ones
-        self.done = self.pod.nextCheckPointId == len(self.checkpoints) - 1
+        self.done = (self.pod.nextCheckPointId == len(self.checkpoints) - 1) or (self.turn == 600)
 
         current_target = self.checkpoints[self.pod.nextCheckPointId]
         d = self.pod.distance(current_target) - current_target.r
@@ -55,6 +57,7 @@ class GameManager:
         self.pod.angle = angle
         self.done = False
         self.reward = 0
+        self.turn = 0
 
     def _parse_checkpoint(self):
         all_pts = []
