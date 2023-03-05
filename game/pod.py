@@ -1,5 +1,4 @@
 from __future__ import annotations
-from dataclasses import dataclass, field
 
 import sys
 import math
@@ -9,17 +8,27 @@ from .checkpoint import CheckPoint
 from .action import Action
 
 
-@dataclass
 class Pod(Point):
     vx: float
     vy: float
     angle: float
     nextCheckPointId: int
-    r: float = field(repr=False, default=0.0)
+    r: float
+
+    def __init__(self, x: int, y: int, vx: float = 0.0, vy: float = 0.0, angle: float = 0.0, nextCheckPointId: int = 0, r: int = 0):
+        super(Pod, self).__init__(x, y)
+        self.vx = vx
+        self.vy = vy
+        self.angle = angle
+        self.nextCheckPointId = nextCheckPointId
+        self.r = 0
 
     @property
     def speed(self):
         return (self.vx * self.vx + self.vy * self.vy) ** 0.5
+
+    def clone(self) -> Pod:
+        return Pod(x=self.x, y=self.y, vx=self.vx, vy=self.vy, angle=self.angle, nextCheckPointId=self.nextCheckPointId)
 
     def applyMoves(self, actions: list[Action], checkpoints: list[CheckPoint], verbose: bool = False) -> int:
         if verbose:
@@ -97,11 +106,6 @@ class Pod(Point):
 
     def _rotate(self, angle: float) -> None:
         # rotate the pod by angle degrees (positive = clockwise)
-
-        # when the pod is stopped, can rotate as much as it requires
-        if self.vx == 0 and self.vy == 0:
-            self.angle = angle
-            return
 
         # We can't turn more than 18 degrees in one turn
         self.angle += max(min(angle, 18.0), -18.0)

@@ -52,9 +52,9 @@ class TestPod(unittest.TestCase):
         self.assertEqual(pod.vy, 0)
         move = Action(thrust=200, angle=180)
         pod.applyMove(move, checkpoints)
-        self.assertEqual(pod.angle, 180)
-        self.assertEqual(pod.vx, -170)
-        self.assertEqual(pod.vy, 0)
+        self.assertEqual(pod.angle, 18)
+        self.assertEqual(pod.vx, 161)
+        self.assertEqual(pod.vy, 52)
 
     def test_friction(self):
         pod = Pod(x=0, y=0, r=0, vx=150, vy=0, angle=0, nextCheckPointId=0)
@@ -76,23 +76,23 @@ class TestPod(unittest.TestCase):
 
         move = Action(thrust=200, angle=90)
         pod.applyMove(move, checkpoints)
-        self.assertEqual(pod.angle, 90)
+        self.assertEqual(pod.angle, 18)
 
         move = Action(thrust=200, angle=30)
         pod.applyMove(move, checkpoints)
-        self.assertEqual(pod.angle, 108)
+        self.assertEqual(pod.angle, 36)
 
         move = Action(thrust=200, angle=-30)
         pod.applyMove(move, checkpoints)
-        self.assertEqual(pod.angle, 90)
+        self.assertEqual(pod.angle, 18)
 
         move = Action(thrust=200, angle=-18)
         pod.applyMove(move, checkpoints)
-        self.assertEqual(pod.angle, 72)
+        self.assertEqual(pod.angle, 0)
 
         move = Action(thrust=200, angle=15)
         pod.applyMove(move, checkpoints)
-        self.assertEqual(pod.angle, 87)
+        self.assertEqual(pod.angle, 15)
 
     def test_rotation_2(self):
         """
