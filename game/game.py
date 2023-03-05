@@ -1,52 +1,52 @@
+from __future__ import annotations
+
 import json
-from typing import Optional
 
 from .checkpoint import CheckPoint
 from .pod import Pod
 from .action import Action
-from .renderer import Renderer
 
 
 class GameManager:
-    def __init__(self, renderer: Optional[Renderer] = None):
+    def __init__(self):
         self.data = None
         self.checkpoints = []
         self.pod = None
         self.done = False
-        self.reward = 0
-        self.renderer = renderer
         self.turn = 0
 
-        if self.renderer is not None:
-            self.renderer.start()
+    def clone(self) -> GameManager:
+        copy = GameManager()
+        copy.data = self.data
+        copy.checkpoints = self.checkpoints
+        copy.pod = self.pod.clone()
+        copy.done = self.done
+        copy.turn = self.turn
+        return copy
 
     def set_testcase(self, testcase: str):
         with open(testcase, "r") as f:
             self.data = json.load(f)
         self.reset()
 
-        if self.renderer is not None:
-            self.render()
-
         return self.pod, self.checkpoints
 
-    def render(self):  # pragma: no cover
-        self.renderer.render(self)
-        if self.done:
-            self.renderer.end()
-
-    def step(self, action: Action) -> tuple[Pod, float, bool]:
-        crossed_chkpt: int = self.pod.applyMove(action=action, checkpoints=self.checkpoints)
+    def apply_action(self, action: Action) -> tuple[Pod, bool]:
+        self.pod.applyMove(action=action, checkpoints=self.checkpoints)
         self.turn += 1
 
         # game is done when the target is the last checkpoint which is a fictive one aligned with the 2 last ones
         self.done = (self.pod.nextCheckPointId == len(self.checkpoints) - 1) or (self.turn == 600)
 
-        current_target = self.checkpoints[self.pod.nextCheckPointId]
-        d = self.pod.distance(current_target) - current_target.r
-        self.reward = 10_000 - min(10_000, d) + 100_000 * crossed_chkpt
+        return self.pod, self.done
 
-        return self.pod, self.reward, self.done
+    def apply_actions(self, actions: list[Action]) -> tuple[Pod, bool]:
+        for action in actions:
+            self.apply_action(action)
+            if self.done:
+                break
+
+        return self.pod, self.done
 
     def reset(self):
         self.pod = Pod(x=0, y=0, vx=0, vy=0, angle=0, nextCheckPointId=0)
@@ -54,7 +54,7 @@ class GameManager:
         start = self.checkpoints[-2]
         self.pod = Pod(x=start.x, y=start.y, vx=0, vy=0, angle=0, nextCheckPointId=0)
         angle = self.pod.getAngle(self.checkpoints[0])
-        self.pod.angle = angle
+        self.pod.angle = round(angle)
         self.done = False
         self.reward = 0
         self.turn = 0
