@@ -136,7 +136,7 @@ class Pod(Point):
     def _has_collision(self, chkptPos: CheckPoint, verbose: bool = False) -> bool:
         curr_pos = Point(x=self.x, y=self.y)
         next_pos = Point(x=self.x + self.vx, y=self.y + self.vy)
-        # print(curr_pos, next_pos, chkptPos)
+
         # si on est a l'arret, pas besoin de verifier
         if curr_pos == next_pos:
             return False

@@ -93,7 +93,6 @@ class TestGame(unittest.TestCase):
         self.assertAlmostEqual(round(game.pod.angle), 161)
 
         game.apply_action(Action(thrust=200, angle=0))
-        game.pod.describe()
         self.assertEqual(game.pod.x, 10163)
         self.assertEqual(game.pod.y, 2051)
 
