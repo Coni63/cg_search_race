@@ -6,5 +6,5 @@ from .point import Point
 
 @dataclass
 class CheckPoint(Point):
-    r: float = field(repr=False, default=600.0)
-    r2: float = field(repr=False, default=360000.0)
+    r: float = field(repr=False, default=600)
+    r2: float = field(repr=False, default=360000)

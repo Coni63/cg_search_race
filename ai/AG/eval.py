@@ -22,4 +22,4 @@ class Eval:
 
     def _score(self, game: GameManager):
         chkptPos = game.checkpoints[game.pod.nextCheckPointId]
-        return game.pod.nextCheckPointId * 100000 + (50000 - game.pod.distance(chkptPos))
+        return game.pod.nextCheckPointId * 1000000 + (50000 - game.pod.distance(chkptPos))
