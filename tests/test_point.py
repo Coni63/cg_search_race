@@ -101,3 +101,23 @@ class TestPoint(unittest.TestCase):
 
         p3 = Point(7.5, -3)
         self.assertEqual(p1 * 1.5, p3)
+
+    def test_equal(self):
+        p1 = Point(x=5, y=-2)
+        p2 = Point(x=0, y=0)
+        self.assertFalse(p1 == p2)
+
+        p1 = Point(x=5, y=-2)
+        p2 = Point(x=5, y=-2)
+        self.assertTrue(p1 == p2)
+
+    def test_norm(self):
+        p1 = Point(x=3, y=4)
+        self.assertEqual(p1.norm_sq(), 25)
+
+        p1 = Point(x=3, y=4)
+        self.assertEqual(p1.norm(), 5)
+
+        p1 = Point(x=15, y=20)
+        p2 = Point(x=12, y=16)
+        self.assertTrue((p1 - p2).norm_sq(), 25)

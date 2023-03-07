@@ -22,6 +22,9 @@ class Point:
     def __mul__(self, scalar: float | int) -> Point:
         return Point(self.x * scalar, self.y * scalar)
 
+    def __eq__(self, other: Point) -> bool:
+        return self.x == other.x and self.y == other.y
+
     def closest(self, a: Point, b: Point) -> Point:
         """
         http://files.magusgeek.com/csb/csb.html
@@ -48,3 +51,9 @@ class Point:
             cy = self.y
 
         return Point(cx, cy)
+
+    def norm_sq(self) -> float:
+        return self.x * self.x + self.y * self.y
+
+    def norm(self) -> float:
+        return self.norm_sq() ** 0.5
