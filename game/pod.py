@@ -62,10 +62,11 @@ class Pod(Point):
         # On cherche un point pour correspondre à l'angle qu'on veut
         # On multiplie par 10000.0 pour éviter les arrondis
         next_angle = math.radians(next_angle)
-        px = self.x + math.cos(next_angle) * 10000
-        py = self.y + math.sin(next_angle) * 10000
+        px = self.x + math.cos(next_angle) * 100000
+        py = self.y + math.sin(next_angle) * 100000
 
-        return (round(px), round(py), action.thrust)
+        # return (round(px), round(py), action.thrust)
+        return (math.trunc(px), math.trunc(py), action.thrust)
 
     def describe(self):  # pragma: no cover
         print("", file=sys.stderr, flush=True)
@@ -132,25 +133,21 @@ class Pod(Point):
 
         return 0
 
-    def _has_collision(self, chkptPos: CheckPoint, verbose: bool = False):
+    def _has_collision(self, chkptPos: CheckPoint, verbose: bool = False) -> bool:
+        curr_pos = Point(x=self.x, y=self.y)
+        next_pos = Point(x=self.x + self.vx, y=self.y + self.vy)
+        # print(curr_pos, next_pos, chkptPos)
         # si on est a l'arret, pas besoin de verifier
-        v2 = self.vx**2 + self.vy**2
-        if v2 == 0:
+        if curr_pos == next_pos:
             return False
 
-        # Distance carré entre le point de départ et le centre du checkpoint
-        dist = self.distance_sq(chkptPos)
-
-        # Somme des rayons au carré
-        # On prend tout au carré pour éviter d'avoir à appeler un sqrt inutilement. C'est mieux pour les performances
-        # si on commence a l'interieur du checkpoint
-        if dist < chkptPos.r2:
+        # On regarde si le point d'arrivé est dans le checkpoint
+        pdist = chkptPos.distance_sq(next_pos)
+        if pdist < chkptPos.r2:
             return True
 
-        nextPos = Point(x=self.x + self.vx, y=self.y + self.vy)
-
         # On cherche le point le plus proche de u (qui est donc en (0,0)) sur la droite décrite par notre vecteur de vitesse
-        p = chkptPos.closest(self, nextPos)
+        p = chkptPos.closest(curr_pos, next_pos)
 
         # Distance au carré entre u et le point le plus proche sur la droite décrite par notre vecteur de vitesse
         pdist = chkptPos.distance_sq(p)
@@ -159,23 +156,15 @@ class Pod(Point):
         if pdist >= chkptPos.r2:
             return False
 
-        # on verifie que le point est en amont de la trajectore
-        # P1 -> p et P1 -> p2 on un produit scalaire > 0
-        if (p.x - self.x) * self.vx + (p.y - self.y) * self.vy < 0:
-            return False
+        # on calcule le produit scalaire entre le (checkpoint / point de départ) et (point d'arrivée / point de départ)
+        # cela donne la distance du point d'intersection sur la trajectoire
+        # en divisant par la norme du vecteur vitesse, on a le temps de l'impact qui doit etre entre 0 et 1 pour qu'il y ait collision
+        v1 = chkptPos - curr_pos
+        v2 = next_pos - curr_pos
+        ps = (v1.x * v2.x) + (v1.y * v2.y)
+        t = ps / v2.norm_sq()
 
-        # Le point d'impact est plus loin que ce qu'on peut parcourir en un seul tour
-        pdist = p.distance_sq(nextPos)
-        if pdist > v2:
-            return False
-
-        # Temps nécessaire pour atteindre le point d'impact
-
-        if verbose:
-            t = pdist / (v2**0.5)
-            print(f"Simulated Collision Time: {t}", file=sys.stderr)
-
-        return True
+        return t >= 0 and t <= 1
 
     def _move(self):
         self.x += self.vx

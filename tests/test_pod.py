@@ -222,8 +222,8 @@ class TestPod(unittest.TestCase):
 
         x, y, thrust = pod.output(move)
 
-        self.assertEqual(x, 7071)
-        self.assertEqual(y, 7071)
+        self.assertEqual(x, 70710)
+        self.assertEqual(y, 70710)
         self.assertEqual(thrust, 123)
 
     def test_output_2(self):
@@ -232,8 +232,8 @@ class TestPod(unittest.TestCase):
 
         x, y, thrust = pod.output(move)
 
-        self.assertEqual(x, 9962)
-        self.assertEqual(y, -872)
+        self.assertEqual(x, 99619)
+        self.assertEqual(y, -8715)
         self.assertEqual(thrust, 11)
 
     def test_output_3(self):
@@ -242,8 +242,8 @@ class TestPod(unittest.TestCase):
 
         x, y, thrust = pod.output(move)
 
-        self.assertEqual(x, 9962)
-        self.assertEqual(y, 872)
+        self.assertEqual(x, 99619)
+        self.assertEqual(y, 8715)
         self.assertEqual(thrust, 11)
 
     def test_get_angle(self):
