@@ -1,60 +1,48 @@
 import glob
-import random
-import numpy as np
+from functools import reduce
+
+from ai.AG import Agent
+from game import GameManager
 
 
-from ai import Agent, Adapter
-from game import GameManager, Renderer
+def get_hash(checkpoints):
+    # remove the last checkpoint as it doesn't exist in real world
+    return reduce(lambda a, b: a ^ b, [pt.x*pt.y for pt in checkpoints[:-1]], 0)
 
 
-files = glob.glob("testcases/**json")
+def make_simulations(files):
+    game = GameManager()
+    for file in files:
+        game.set_testcase(file)
 
-"""
-renderer = None
-renderer = Renderer()
-game = GameManager(renderer=renderer)
-game.set_testcase(random.choice(files))
-input("")
-"""
+        agent = Agent()
+        output = []
+        best_gene = None
+        for i in range(600):
+            best_gene = agent.evolve(game, initial_individual=best_gene, generation=1000)
+            output.append(str(best_gene.moves[0]))
+            pod, done = game.apply_action(best_gene.moves[0])
+            if done:
+                break
 
-if __name__ == '__main__':
-    game = GameManager(renderer=None)
-    n_games = 300
-    agent = Agent(n_actions=2,
-                  batch_size=5,
-                  alpha=0.0003,
-                  n_epochs=4,
-                  input_dims=5)
+        with open(f"output/{file[10:-5]}.txt", "w") as f:
+            f.write(";".join(output))
 
-    best_score = 0
-    score_history = []
-    learn_iters = 0
-    avg_score = 0
-    n_steps = 0
-    N = 20
 
-    for i in range(n_games):
-        pod, checkpoints = game.set_testcase(random.choice(files))
-        observation = Adapter.game_to_state(pod, checkpoints)
-        done = False
-        score = 0
-        while not done:
-            output, prob, val = agent.choose_action(observation)
-            action = Adapter.prediction_to_action(output)
-            pod, reward, done = game.step(action)
-            observation_ = Adapter.game_to_state(pod, checkpoints)
-            n_steps += 1
-            score += reward
-            agent.store_transition(observation, action, prob, val, reward, done)
-            if n_steps % N == 0:
-                agent.learn()
-                learn_iters += 1
-            observation = observation_
-        score_history.append(score)
-        avg_score = np.mean(score_history[-100:])
+def make_dictionary(files):
+    ans = {}
+    game = GameManager()
+    for file in files:
+        game.set_testcase(file)
+        signature = get_hash(game.checkpoints)
+        with open(f"output/{file[10:-5]}.txt", "r") as f:
+            cmd = f.read()
+        ans[signature] = cmd
+    return ans
 
-        if avg_score > best_score:
-            best_score = avg_score
-            agent.save_models()
 
-        print(f'episode {i} - score {score:1f} - avg {avg_score:.1f} - time_steps {n_steps} - learning_steps {learn_iters}')
+if __name__ == "__main__":
+    files = glob.glob("testcases/**.json")
+    # make_simulations(files)
+    d = make_dictionary(files)
+    print(d)
