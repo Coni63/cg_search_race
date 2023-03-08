@@ -154,8 +154,14 @@ class Pod(Point):
         # Si la distance entre u et cette droite est inférieur à la somme des rayons, alors il y a possibilité de collision
         if b_sq >= chkptPos.r2:
             return -1
-
+        
         # produit scalaire du centre du checkpoint avec la vitesse
+        # s'il est negatif c'est que le pt est en arriere de la trajectoire
+        d = p - curr_pos
+        s = d.x * self.vx + d.y * self.vy
+        if s < 0:
+            return -1
+
         a_sq = curr_pos.distance_sq(p)
         if a_sq < 0:
             return -1
