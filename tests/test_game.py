@@ -46,16 +46,16 @@ class TestGame(unittest.TestCase):
         game.pod = Pod(x=0, y=0, vx=0, vy=0, angle=0, nextCheckPointId=0)
         self.assertEqual(game.turn, 0)
 
-        pod, done = game.apply_action(Action(thrust=1, angle=0))
+        pod, done, t = game.apply_action(Action(thrust=1, angle=0))
         self.assertEqual(game.turn, 1)
         self.assertFalse(done)
 
         for i in range(598):
-            pod, done = game.apply_action(Action(thrust=1, angle=0))
+            pod, done, t = game.apply_action(Action(thrust=1, angle=0))
         self.assertEqual(game.turn, 599)
         self.assertFalse(done)
 
-        pod, done = game.apply_action(Action(thrust=1, angle=0))
+        pod, done, t = game.apply_action(Action(thrust=1, angle=0))
         self.assertEqual(game.turn, 600)
         self.assertTrue(done)
 
@@ -71,16 +71,16 @@ class TestGame(unittest.TestCase):
         game.pod = Pod(x=0, y=0, vx=0, vy=0, angle=0, nextCheckPointId=0)
         self.assertEqual(game.turn, 0)
 
-        pod, done = game.apply_action(Action(thrust=1, angle=0))
+        pod, done, t = game.apply_action(Action(thrust=1, angle=0))
         self.assertEqual(game.turn, 1)
         self.assertFalse(done)
 
         actions = [Action(thrust=1, angle=0) for i in range(598)]
-        pod, done = game.apply_actions(actions)
+        pod, done, t = game.apply_actions(actions)
         self.assertEqual(game.turn, 599)
         self.assertFalse(done)
 
-        pod, done = game.apply_action(Action(thrust=1, angle=0))
+        pod, done, t = game.apply_action(Action(thrust=1, angle=0))
         self.assertEqual(game.turn, 600)
         self.assertTrue(done)
 
@@ -123,10 +123,14 @@ class TestGame(unittest.TestCase):
         actions = [Action(thrust=192, angle=17), Action(thrust=200, angle=3), Action(thrust=179, angle=-5), Action(thrust=200, angle=-13), Action(thrust=200, angle=11), Action(thrust=200, angle=-10), Action(thrust=175, angle=-13), Action(thrust=200, angle=-18), Action(thrust=200, angle=-18), Action(thrust=0, angle=-18), Action(thrust=0, angle=-18), Action(thrust=0, angle=-18), Action(thrust=51, angle=-18), Action(thrust=0, angle=-18), Action(thrust=16, angle=-18), Action(thrust=31, angle=-18), Action(thrust=200, angle=-18), Action(thrust=200, angle=-17), Action(thrust=120, angle=-5), Action(thrust=200, angle=10), Action(thrust=169, angle=-12), Action(thrust=200, angle=18), Action(thrust=178, angle=18), Action(thrust=200, angle=2), Action(thrust=199, angle=2), Action(thrust=200, angle=18), Action(thrust=200, angle=18), Action(thrust=167, angle=18), Action(thrust=97, angle=18), Action(thrust=104, angle=18)]
         target_results = [(10161, 1992, -163, 5, 178), (9798, 1993, -308, 1, 181), (9311, 2006, -413, 11, 176), (8706, 2075, -513, 59, 163), (7994, 2154, -605, 67, 174), (7196, 2276, -677, 103, 164), (6365, 2463, -705, 159, 151), (5523, 2768, -715, 259, 133), (4723, 3208, -679, 374, 115), (4044, 3582, -577, 317, 97), (3467, 3899, -490, 269, 79), (2977, 4168, -416, 228, 61), (2598, 4430, -321, 223, 43), (2277, 4653, -272, 189, 25), (2020, 4843, -217, 162, 7), (1833, 4999, -158, 132, 349), (1849, 5034, 14, 29, 331), (2001, 4919, 129, -97, 314), (2205, 4728, 173, -161, 309), (2528, 4435, 275, -248, 319), (2904, 4052, 320, -325, 307), (3387, 3612, 411, -373, 325), (3968, 3186, 494, -361, 343), (4655, 2773, 584, -350, 345), (5432, 2378, 661, -335, 347), (6292, 2060, 731, -269, 5), (7207, 1869, 777, -162, 23), (8110, 1816, 767, -44, 41), (8926, 1855, 694, 33, 59)]
 
-        for action, end_state in zip(actions, target_results):
-            game.apply_action(action)
+        for i, (action, end_state) in enumerate(zip(actions, target_results)):
+            pod, done, t = game.apply_action(action)
             val = (game.pod.x, game.pod.y, game.pod.vx, game.pod.vy, game.pod.angle)
             self.assertTupleEqual(val, end_state)
+            if i == 11:
+                self.assertAlmostEqual(t, 0.8648988427501346, places=5)
+            else:
+                self.assertIsNone(t)
 
         self.assertEqual(game.pod.nextCheckPointId, 1)
 
@@ -140,6 +144,7 @@ class TestGame(unittest.TestCase):
         - compare the pod values after every action
 
         Ce test est realisé apres un fix sur le cross de chekcpoints resultant a d'autres output et resultats
+        Les temps de crosscheckpoints sont aussi controlées
         """
         game = GameManager()
         pod, checkpoints = game.set_testcase("testcases/test1.json")
@@ -151,11 +156,17 @@ class TestGame(unittest.TestCase):
         val = (game.pod.x, game.pod.y, game.pod.vx, game.pod.vy, game.pod.angle)
         self.assertTupleEqual((10353, 1986, 0, 0, 161), val)
 
-        for action, end_state, command_output in zip(actions, target_results, outputs):
+        for i, (action, end_state, command_output) in enumerate(zip(actions, target_results, outputs)):
             output_pod = game.pod.output(action=action)
-            game.apply_action(action)
+            pod, done, t = game.apply_action(action)
             val = (game.pod.x, game.pod.y, game.pod.vx, game.pod.vy, game.pod.angle)
             self.assertTupleEqual(command_output, output_pod)
             self.assertTupleEqual(val, end_state)
+            if i == 12:
+                self.assertAlmostEqual(t, 0.9842623982679378, places=5)
+            elif i == 18:
+                self.assertAlmostEqual(t, 0.9130163339764782, places=5)
+            else:
+                self.assertIsNone(t)
 
         self.assertEqual(game.pod.nextCheckPointId, 2)

@@ -32,13 +32,13 @@ class GameManager:
         return self.pod, self.checkpoints
 
     def apply_action(self, action: Action) -> tuple[Pod, bool]:
-        self.pod.applyMove(action=action, checkpoints=self.checkpoints)
+        t = self.pod.applyMove(action=action, checkpoints=self.checkpoints)
         self.turn += 1
 
         # game is done when the target is the last checkpoint which is a fictive one aligned with the 2 last ones
         self.done = (self.pod.nextCheckPointId == len(self.checkpoints) - 1) or (self.turn == 600)
 
-        return self.pod, self.done
+        return self.pod, self.done, t
 
     def apply_actions(self, actions: list[Action]) -> tuple[Pod, bool]:
         for action in actions:
@@ -46,7 +46,7 @@ class GameManager:
             if self.done:
                 break
 
-        return self.pod, self.done
+        return self.pod, self.done, None
 
     def reset(self):
         self.pod = Pod(x=0, y=0, vx=0, vy=0, angle=0, nextCheckPointId=0)

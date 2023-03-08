@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import math
+from typing import Tuple
 
 from .point import Point
 from .checkpoint import CheckPoint
@@ -36,7 +37,7 @@ class Pod(Point):
 
         cross = 0
         for action in actions:
-            cross += self.applyMove(action, checkpoints, verbose=verbose)
+            self.applyMove(action, checkpoints, verbose=verbose)
 
         if verbose:
             self.describe()
@@ -46,10 +47,10 @@ class Pod(Point):
     def applyMove(self, action: Action, checkpoints: list[CheckPoint], verbose: bool = False) -> int:
         self._rotate(action.angle)
         self._boost(action.thrust)
-        cross: int = self._check_cross_checkpoint(checkpoints, verbose=verbose)
+        cross, data = self._check_cross_checkpoint(checkpoints)
         self._move()
         self._end()
-        return cross
+        return data
 
     def output(self, action: Action):
         next_angle: float = self.angle + action.angle
@@ -125,46 +126,47 @@ class Pod(Point):
         self.vx += math.cos(ra) * thrust
         self.vy += math.sin(ra) * thrust
 
-    def _check_cross_checkpoint(self, checkPoints: list[CheckPoint], verbose: bool) -> int:
+    def _check_cross_checkpoint(self, checkPoints: list[CheckPoint]) -> Tuple[int, float]:
         chkpt_pos = checkPoints[self.nextCheckPointId]
-        if self._has_collision(chkpt_pos, verbose):
+        t = self._has_collision(chkpt_pos)
+        if t != -1:
             self.nextCheckPointId += 1
-            return 1
+            return 1, t
 
-        return 0
+        return 0, None
 
-    def _has_collision(self, chkptPos: CheckPoint, verbose: bool = False) -> bool:
+    def _has_collision(self, chkptPos: CheckPoint) -> float:
+        """
+        Approach used : https://www.youtube.com/watch?v=23kTf-36Fcw
+        """
         curr_pos = Point(x=self.x, y=self.y)
         next_pos = Point(x=self.x + self.vx, y=self.y + self.vy)
 
         # si on est a l'arret, pas besoin de verifier
         if curr_pos == next_pos:
-            return False
-
-        # On regarde si le point d'arrivé est dans le checkpoint
-        pdist = chkptPos.distance_sq(next_pos)
-        if pdist < chkptPos.r2:
-            return True
+            return -1
 
         # On cherche le point le plus proche de u (qui est donc en (0,0)) sur la droite décrite par notre vecteur de vitesse
         p = chkptPos.closest(curr_pos, next_pos)
 
         # Distance au carré entre u et le point le plus proche sur la droite décrite par notre vecteur de vitesse
-        pdist = chkptPos.distance_sq(p)
-
+        b_sq = chkptPos.distance_sq(p)
         # Si la distance entre u et cette droite est inférieur à la somme des rayons, alors il y a possibilité de collision
-        if pdist >= chkptPos.r2:
-            return False
+        if b_sq >= chkptPos.r2:
+            return -1
 
-        # on calcule le produit scalaire entre le (checkpoint / point de départ) et (point d'arrivée / point de départ)
-        # cela donne la distance du point d'intersection sur la trajectoire
-        # en divisant par la norme du vecteur vitesse, on a le temps de l'impact qui doit etre entre 0 et 1 pour qu'il y ait collision
-        v1 = chkptPos - curr_pos
-        v2 = next_pos - curr_pos
-        ps = (v1.x * v2.x) + (v1.y * v2.y)
-        t = ps / v2.norm_sq()
-
-        return t >= 0 and t <= 1
+        # produit scalaire du centre du checkpoint avec la vitesse
+        a_sq = curr_pos.distance_sq(p)
+        if a_sq < 0:
+            return -1
+        
+        f = math.sqrt(chkptPos.r2 - b_sq)
+        t = (math.sqrt(a_sq) - f) / (self.vx * self.vx + self.vy * self.vy)**0.5
+        
+        if t < 0 or t > 1:
+            return -1
+        
+        return t
 
     def _move(self):
         self.x += self.vx
