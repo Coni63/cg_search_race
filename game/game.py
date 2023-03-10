@@ -72,6 +72,6 @@ class GameManager:
         n_minus2 = self.checkpoints[-2]
         n_minus1 = self.checkpoints[-1]
         dist = n_minus2.distance(n_minus1)
-        factor = 30_000 / dist
+        factor = 50_000 / dist
         last_pt = n_minus1 * (factor+1) - n_minus2 * factor
         self.checkpoints.append(CheckPoint(x=round(last_pt.x), y=round(last_pt.y)))

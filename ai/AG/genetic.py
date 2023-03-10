@@ -9,11 +9,11 @@ class Agent:
     def __init__(self):
         self.population: list[Eval] = []
 
-        self.stepsSimulated: int = 20
+        self.stepsSimulated: int = 22
         self.populationSize: int = 11
         self.selectionSize: int = 1
         self.mutationSize: int = 10
-        self.attenuationFactor: float = 0.999
+        self.attenuationFactor: float = 0.9975
         random.seed(123)
 
     def evolve(self, game: GameManager, initial_individual: Eval = None, generation: int = 100) -> Eval:
@@ -73,11 +73,10 @@ class Agent:
         for i in range(n, self.populationSize):
             moves: list[Action] = [self._create_random_step() for i in range(self.stepsSimulated)]
             self.population.append(self._get_eval_from_moves(moves))
-            # print(self.population[-1])
 
     def _create_random_step(self) -> Action:
         return Action(thrust=random.randint(0, 200), angle=random.randint(-18, 18))
-    
+
     def _get_eval_from_moves(self, moves: list[Action]) -> Eval:
         eval: Eval = Eval(moves)
         eval.run(self.initial_game)

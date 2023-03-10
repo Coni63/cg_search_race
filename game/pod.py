@@ -152,7 +152,7 @@ class Pod(Point):
         # Distance au carré entre u et le point le plus proche sur la droite décrite par notre vecteur de vitesse
         b_sq = chkptPos.distance_sq(p)
         # Si la distance entre u et cette droite est inférieur à la somme des rayons, alors il y a possibilité de collision
-        if b_sq >= chkptPos.r2:
+        if b_sq > chkptPos.r2:
             return -1
         
         # produit scalaire du centre du checkpoint avec la vitesse
