@@ -6,28 +6,33 @@ from .eval import Eval
 
 class Agent:
 
-    def __init__(self):
+    def __init__(self, seed=123, generation=1500, stepsSimulated=18):
         self.population: list[Eval] = []
 
-        self.stepsSimulated: int = 22
+        self.generation = generation
+        self.stepsSimulated: int = stepsSimulated
         self.populationSize: int = 11
         self.selectionSize: int = 1
         self.mutationSize: int = 10
         self.attenuationFactor: float = 0.9975
-        random.seed(123)
+        self.seed = seed
+        random.seed(self.seed)
 
-    def evolve(self, game: GameManager, initial_individual: Eval = None, generation: int = 100) -> Eval:
+    def evolve(self, game: GameManager, initial_individual: Eval = None) -> Eval:
         self.initial_game = game
 
         if initial_individual is None:
             self._init_population()
+            gen = self.generation
+            amplitude = 1
         else:
             prev_moves = initial_individual.moves
             new_moves = prev_moves[1:] + [self._create_random_step()]
             self.population: list[Eval] = [Eval(new_moves)]
+            gen = self.generation // 3
+            amplitude = 0.5
 
-        amplitude = 1
-        for i in range(generation):
+        for i in range(gen):
             self._selection()
             # print("generation:", i)
             # print(*self.population, sep="\n")
@@ -49,7 +54,7 @@ class Agent:
         for i in range(self.mutationSize):
             new_moves = []
             for action in list_moves:
-                if random.random() < 0.3:
+                if random.random() < 0.3 * (amplitude**0.5):
                     ramin = action.angle - (18 * amplitude)
                     ramax = action.angle + (18 * amplitude)
 

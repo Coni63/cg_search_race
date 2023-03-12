@@ -1,3 +1,4 @@
+from __future__ import annotations
 from game import Action, GameManager
 
 
@@ -8,6 +9,14 @@ class Eval:
     def __init__(self, moves: list[Action]):
         self.moves = moves
         self.fitness = 0
+
+    @staticmethod
+    def from_str(s) -> Eval:
+        moves = []
+        for sub in s.split(";"):
+            thrust, alpha = [int(j) for j in sub.split(",")]
+            moves.append(Action(thrust, alpha))
+        return Eval(moves)
 
     def run(self, game: GameManager):
         test_game = game.clone()
