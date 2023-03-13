@@ -25,7 +25,8 @@ pip install -r requirements.txt
 
 ### Run
 
-TBD
+Refer to main.py for the run.
+The idea is to run as much GA as possible per track and save every result in a DB to get the best simulations for every track. On CG, the sequence will be taken based on a hash of the input checkpoints.
 
 ### Run tests / coverage
 
@@ -59,8 +60,3 @@ cd api
 venv/Scripts/activate.ps1  # or source venv/bin/activate or workon venv
 pip freeze > requirements.txt
 ```
-
-### Other tutorials
-
-- https://www.youtube.com/watch?v=4sTZN15J33A
-- https://nedbatchelder.com/blog/202209/making_a_coverage_badge.html
