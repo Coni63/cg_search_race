@@ -135,7 +135,7 @@ class TestPod(unittest.TestCase):
         self.assertEqual(pod.nextCheckPointId, 0)
         pod.applyMove(move, checkpoints)
         self.assertEqual(pod.x, 700)
-        self.assertEqual(pod.nextCheckPointId, 0)
+        self.assertEqual(pod.nextCheckPointId, 1)
 
     def test_cross_checkpoint_2(self):
         """

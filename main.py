@@ -41,12 +41,14 @@ def make_simulations(files, sample=100):
     save_manager = Saver("ai/AG/results.db")
     for file in files:
         for i in range(sample):
+            random.seed(None)
             generation = 1500
             seed = random.randint(0, 100000)
             stepsSimulated = random.randint(15, 25)
             actions = make_simulation(file, seed=seed, generation=generation, stepsSimulated=stepsSimulated)
             score = get_score(file, actions)
             seq = ";".join(map(str, actions))
+            print(file, seed, stepsSimulated, score)
             save_manager.save(file, seed, stepsSimulated, generation, seq, score)
 
 
@@ -62,7 +64,7 @@ def make_dictionary(files, only_validator=True):
             continue
 
         signature = get_hash(game.checkpoints)
-        actions, score = s.get_best(file)
+        actions, score = s.get_best(file[10:])
         ans[signature] = actions
 
     with open("output/sols.txt", "w") as f:
@@ -73,7 +75,7 @@ def eval(files, only_validator=True):
     s = Saver("ai/AG/results.db")
     total = 0
     for file in files:
-        actions, score = s.get_best(file)
+        actions, score = s.get_best(file[10:])
         total += score
         print(file, score)
 
@@ -81,9 +83,9 @@ def eval(files, only_validator=True):
 
 
 if __name__ == "__main__":
-    files = glob.glob("testcases/test15.json")
+    files = glob.glob("testcases/test10.json")
     make_simulations(files, sample=100)
 
-    make_dictionary(files)
+    # make_dictionary(files)
 
-    eval(files)
+    # eval(files)

@@ -18,7 +18,7 @@ class Saver:
         res = self.cur.execute("""
             SELECT actions, score
             FROM experiences
-            WHERE testfile = ?
+            WHERE testfile LIKE ?
             ORDER BY score ASC
-            LIMIT 1""", (testfile,))
+            LIMIT 1""", (f'%{testfile}', ))
         return res.fetchone()
