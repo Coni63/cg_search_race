@@ -10,7 +10,6 @@ cd cg_search_race
 ### Install the environment
 
 ```sh
-cd api
 python -m venv venv
 venv/Scripts/activate.ps1
 pip install -r requirements.txt
