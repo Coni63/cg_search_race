@@ -1,17 +1,13 @@
 import glob
-from functools import reduce
-import json
 import random
 from ai.AG import Agent, Saver
-from game import GameManager, Action, CheckPoint
-
-
-def get_hash(checkpoints: list[CheckPoint]) -> int:
-    # remove the last checkpoint as it doesn't exist in real world
-    return reduce(lambda a, b: a ^ b, [pt.x*pt.y for pt in checkpoints[:-1]], 0)
+from game import GameManager, Action
 
 
 def make_simulation(file: str, **kwargs) -> list[Action]:
+    """
+    Run a single iteration of the simulation for a given Agent and testcase.
+    """
     game = GameManager()
     game.set_testcase(file)
 
@@ -27,6 +23,9 @@ def make_simulation(file: str, **kwargs) -> list[Action]:
 
 
 def get_score(file: str, actions: list[Action]) -> float:
+    """
+    For a given testcase and list of actions, returns the score
+    """
     game = GameManager()
     game.set_testcase(file)
 
@@ -37,12 +36,15 @@ def get_score(file: str, actions: list[Action]) -> float:
     return 1000
 
 
-def make_simulations(files, sample=100):
+def make_simulations(files, sample=20, generation=1500, seed=None):
+    """
+    Run 'sample' simulations for each testcase in 'files'
+    The AG run 'generation' generations with a starting seed
+    """
     save_manager = Saver("ai/AG/results.db")
     for file in files:
         for i in range(sample):
-            random.seed(None)
-            generation = 1500
+            random.seed(seed)
             seed = random.randint(0, 100000)
             stepsSimulated = random.randint(15, 25)
             actions = make_simulation(file, seed=seed, generation=generation, stepsSimulated=stepsSimulated)
@@ -52,40 +54,6 @@ def make_simulations(files, sample=100):
             save_manager.save(file, seed, stepsSimulated, generation, seq, score)
 
 
-def make_dictionary(files, only_validator=True):
-    ans = {}
-    s = Saver("ai/AG/results.db")
-    game = GameManager()
-    for file in files:
-        game.set_testcase(file)
-
-        # skip non validator puzzle to recude dict size
-        if only_validator and not game.data["isValidator"]:
-            continue
-
-        signature = get_hash(game.checkpoints)
-        actions, score = s.get_best(file[10:])
-        ans[signature] = actions
-
-    with open("output/sols.txt", "w") as f:
-        json.dump(ans, f)
-
-
-def eval(files, only_validator=True):
-    s = Saver("ai/AG/results.db")
-    total = 0
-    for file in files:
-        actions, score = s.get_best(file[10:])
-        total += score
-        print(file, score)
-
-    print("total", total)
-
-
 if __name__ == "__main__":
-    files = glob.glob("testcases/test10.json")
-    make_simulations(files, sample=100)
-
-    # make_dictionary(files)
-
-    # eval(files)
+    files = glob.glob("testcases/test*.json")
+    make_simulations(files)

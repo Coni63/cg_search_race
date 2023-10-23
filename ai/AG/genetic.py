@@ -1,3 +1,4 @@
+import math
 import random
 
 from game import Action, GameManager
@@ -14,7 +15,7 @@ class Agent:
         self.populationSize: int = 11
         self.selectionSize: int = 1
         self.mutationSize: int = 10
-        self.attenuationFactor: float = 0.9975
+        self.attenuationFactor: float = math.exp(math.log(0.05) / generation)
         self.seed = seed
         random.seed(self.seed)
 

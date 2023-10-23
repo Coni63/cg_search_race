@@ -30,5 +30,24 @@ class Eval:
         return s + "\n\n"
 
     def _score(self, game: GameManager):
+        """
+        Score:
+
+        1M de pts par checkpoints
+        + un score basé sur la distance au prochain checkpoints (100k points si a 0 de distance)
+        + une penalité lorsque le bot n'accelere pas à fond
+        """
         chkptPos = game.checkpoints[game.pod.nextCheckPointId]
-        return game.pod.nextCheckPointId * 1_000_000 + max(0, 100_000 - game.pod.distance(chkptPos))
+
+        history_size = 10
+        # entre 0 et 200 but close to 0
+        pena_thrust = sum(200-move.thrust for move in self.moves[-history_size:]) / history_size   # entre 0 et 200 but close to 0
+        # pena_angle is between 0 and 36
+        pena_angle = sum(abs(b.angle-a.angle) for a, b in zip(self.moves[-history_size-1:-1], self.moves[-history_size:])) / history_size
+
+        return (
+            game.pod.nextCheckPointId * 100_000
+            + max(0, 100_000 - game.pod.distance(chkptPos))
+            - pena_thrust * 5
+            - pena_angle * 25
+        )

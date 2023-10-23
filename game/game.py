@@ -8,12 +8,13 @@ from .action import Action
 
 
 class GameManager:
-    def __init__(self):
+    def __init__(self, MAX_TURN=600):
         self.data = None
         self.checkpoints = []
         self.pod = None
         self.done = False
         self.turn = 0
+        self.MAX_TURN = MAX_TURN
 
     def clone(self) -> GameManager:
         copy = GameManager()
@@ -36,7 +37,7 @@ class GameManager:
         self.turn += 1
 
         # game is done when the target is the last checkpoint which is a fictive one aligned with the 2 last ones
-        self.done = (self.pod.nextCheckPointId == len(self.checkpoints) - 1) or (self.turn == 600)
+        self.done = (self.pod.nextCheckPointId == len(self.checkpoints) - 1) or (self.turn == self.MAX_TURN)
 
         return self.pod, self.done, t
 
