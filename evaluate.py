@@ -22,11 +22,13 @@ def make_dictionary(files, only_validator=True) -> dict:
             continue
 
         signature = get_hash(game.checkpoints)
+        print(file, signature)
         actions, score = s.get_best(file[10:])
         total += score
         ans[signature] = actions
 
     print("total", total)
+    return ans
 
 
 if __name__ == "__main__":
@@ -34,4 +36,4 @@ if __name__ == "__main__":
     data = make_dictionary(files)
 
     with open("output/sols.txt", "w") as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=4)
